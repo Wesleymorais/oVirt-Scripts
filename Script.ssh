@@ -1,0 +1,253 @@
+#! /bin/bash
+echo Script para instalação do oVirt-Engine / Script to install the oVirt-Engine. 
+date
+
+menu()
+
+{
+escolha="-1"
+while [ $escolha -ne 0 ];
+do
+echo "========================================================="
+echo "Selecione a opção desejada / Select the desired option:"  
+echo "1- Instalar o oVirt-Engine"
+echo "2- Install the oVirt-Engine"
+echo "========================================================="
+echo -n "Opção/option: "
+read escolha
+if [ "$escolha" -eq "1" ];
+then
+InstalaroVirtEngine
+elif [ "$escolha" -eq "2" ];
+then
+InstalaroVirtEngineEnglish
+fi
+done
+} 
+
+InstalaroVirtEngine()
+{
+echo ATUALIZAR O SISTEMA:
+echo Qual é o seu sistema?
+echo "1- Fedora (Versão 20 ou anterior)"
+echo "2- Fedora (Versão 21, 22)"
+echo "3- CentOS (6,7)"
+echo ==================================
+read sistema
+if [ "$sistema" -eq "1" ];
+then
+su -c "yum -y update"
+elif [ "$sistema" -eq "2" ];
+then
+su -c "dnf -y update"
+elif [ "$sistema" -eq "3"];
+then
+su -c "yum -y update"
+fi 
+clear
+
+echo Definindo um IP fixo.
+echo Escolha uma placa de rede?" Coloque apenas o nome da placa de rede sem o ifcfg-"
+cd /etc/sysconfig/network-scripts/ 
+ls -1 | egrep "ifcfg"
+echo =============================
+read placaderede
+if [ "$placaderede" == "eth0" ];
+then
+placaderedeeth
+elif [ "$placaderede" == "enp4s0" ];
+then
+placaderedeenp4s0
+fi
+placaderedeeth0 ()
+{
+echo Informe o IP a ser usado
+read IP
+echo Informe a mascara de rede usada
+read mascara_de_rede
+echo Informe o IP do Gateway
+read IP_GATEWAY
+echo Informe o IP do Servidor DNS Secundário
+read IP_DNS
+echo Informe o IP do Servidor DNS Secundário 
+read IP_DNS2
+su -c "sed -i '6 d' /etc/sysconfig/network-scripts/ifcfg-$placaderede"
+su -c "sed -i '/NM_CONTROLLED=yes/a BOOTPROTO=static' /etc/sysconfig/network-scripts/$placaderede"
+su -c "sed -i '/NAME="System eth0"/a IPADDR='$IP  /etc/sysconfig/network-scripts/$placaderede"
+su -c "sed -i '/IPADDR=/a Mascara_de_Rede='$mascara_de_rede  /etc/sysconfig/network-scripts/$placaderede"
+su -c "sed -i '/Mascara_de_Rede/a GATEWAY='$IP_GATEWAY  /etc/sysconfig/network-scripts/$placaderede"
+su -c "sed -i '/GATEWAY/a DNS1='$IP_DNS  /etc/sysconfig/network-scripts/$placaderede"
+su -c "sed -i '/DNS1/a DNS2='$IP_DNS2 /etc/sysconfig/network-scripts/$placaderede"
+}
+placaderedeenp4s0 ()
+{
+echo Informe o IP a ser usado
+read IP
+echo Informe a mascara de rede usada
+read mascara_de_rede
+echo Informe o IP do Gateway
+read IP_GATEWAY
+echo Informe o IP do Servidor DNS Secundário
+read IP_DNS
+echo Informe o IP do Servidor DNS Secundário 
+read IP_DNS2
+su -c "sed -i '3 d' /etc/sysconfig/network-scripts/$placaderede"
+su -c "sed -i '/TYPE="Ethernet"/a BOOTPROTO=static' /etc/sysconfig/network-scripts/ifcfg-$placaderede"
+su -c "sed -i '/IPV6_PEERROUTES="yes"/a IPADDR='$IP  /etc/sysconfig/network-scripts/ifcfg-$placaderede"
+su -c "sed -i '/IPADDR=/a Mascara_de_Rede='$mascara_de_rede  /etc/sysconfig/network-scripts/ifcfg-$placaderede"
+su -c "sed -i '/Mascara_de_Rede/a GATEWAY='$IP_GATEWAY  /etc/sysconfig/network-scripts/ifcfg-$placaderede"
+su -c "sed -i '/GATEWAY/a DNS1='$IP_DNS  /etc/sysconfig/network-scripts/ifcfg-$placaderede"
+su -c "sed -i '/DNS1/a DNS2='$IP_DNS2 /etc/sysconfig/network-scripts/ifcfg-$placaderede"
+}
+echo Dê um nome para associar ao IP deste computador?
+read FQDN
+su -c "echo "$IP  $FQDN" > /etc/hosts"
+cat /etc/hosts
+echo "Tecle <Enter> para continuar"
+read
+
+echo Reiniciando o serviço de rede.
+su -c "/etc/init.d/network restart"
+clear
+
+echo Baixar e instalar o arquivo RPM contendo os endereços "do" repositório oVirt.
+echo "Tecle <Enter> para continuar"
+read
+if [ "$sistema" -eq "1" ];
+then
+su -c "yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release35.rpm"
+elif [ "$sistema" -eq "2" ];
+then
+su -c "dnf -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release35.rpm"
+fi
+clear
+
+echo Baixar e instalar o oVirt-Engine
+echo "Tecle <Enter> para continuar"
+read
+if [ "$sistema" -eq "1" ];
+then
+su -c "yum -y install ovirt-engine"
+elif [ "$sistema" -eq "2" ];
+then
+su -c "dnf -y install ovirt-engine"
+fi
+clear
+
+echo Configurar o oVirt-Engine.
+echo "Tecle <Enter> para continuar"
+read
+su -c "engine-setup"
+echo "tecle <Enter> para continuar"
+read 
+firefox https://$FQDN:443/ovirt-engine
+echo "Tecle <Enter> para continuar"
+read
+clear
+echo Instalação efetuada com Sucesso
+exit
+}
+
+InstalaroVirtEngineEnglish()
+{
+echo UPDATE THE SYSTEM ":"
+echo Your system works with which package manager YUM or DNF?
+echo 1- YUM
+echo 2- DNF
+echo ==================================
+read system
+if [ "$system" -eq "1" ];
+then
+su -c "yum -y update"
+elif [ "$system" -eq "2" ];
+then
+su -c "dnf -y update"
+fi
+clear
+
+echo Downloading NANO to edit files
+if [ "$system" -eq "1" ];
+then
+su -c "yum -y install nano"
+elif [ "$system" -eq "2" ];
+then
+su -c "dnf -y install nano"
+fi
+clear
+
+echo Setting a fixed IP.
+
+echo "Press <Enter> to continue"
+read
+
+echo Choose a network card?
+cd /etc/sysconfig/network-scripts/
+ls -1 | egrep "ifcfg"
+echo =============================
+read networkcard
+echo Enter the IP to be used
+read IP
+echo Enter the network mask used
+read netmask
+echo Enter the Gateway IP
+read IP_GATEWAY
+echo Enter the DNS Server IP
+read IP_DNS
+sed -i '6 d' /etc/sysconfig/network-scripts/$networkcard
+sed -i '/NM_CONTROLLED=yes/a BOTPROTO=static' /etc/sysconfig/network-scripts/$networkcard
+sed -i '/NAME="System eth0"/a IPADDR='$IP  /etc/sysconfig/network-scripts/$networkcard
+sed -i '/IPADDR=/a NETMASK='$netmask  /etc/sysconfig/network-scripts/$networkcard
+sed -i '/Mascara_de_Rede/a GATEWAY='$IP_GATEWAY  /etc/sysconfig/network-scripts/$networkcard
+sed -i '/GATEWAY/a DNS1='$IP_DNS  /etc/sysconfig/network-scripts/$networkcard
+
+echo Rebooting the network service.
+su -c "service network restart"
+
+clear
+echo Set the FQDN.
+
+echo "Press <Enter> to continue"
+read
+
+echo name to be used as FQDN ?
+read FQDN
+echo "$IP      $FQDN" > /etc/hosts
+echo The FQDN is:
+cat /etc/hosts
+clear
+
+echo Download and "install" the RPM "file" containing the addresses "of" oVirt repository.
+echo "Press <Enter> to continue"
+read
+if [ "$system" -eq "1" ];
+then
+su -c "yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm"
+elif [ "$system" -eq "2" ];
+then
+su -c "dnf -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm"
+fi
+clear
+
+echo Download and "install" the oVirt Engine
+echo "Press <Enter> to continue"
+read
+if [ "$system" -eq "1" ];
+then
+su -c "yum -y install ovirt-engine"
+elif [ "$system" -eq "2" ];
+then
+su -c "dnf -y install ovirt-engine"
+fi
+clear
+
+echo Setting the oVirt Engine.
+echo "Press <Enter> to continue"
+read
+su -c "engine-setup"
+
+firefox https://$FQDN:443/ovirt-engine
+
+echo Made installation Successfully
+clear
+exit
+}
