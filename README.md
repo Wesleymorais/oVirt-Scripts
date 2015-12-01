@@ -1,2 +1,2 @@
 # oVirt-Scripts
-Scritps para instalação do oVirt
+Scritp para instalar oVirt
