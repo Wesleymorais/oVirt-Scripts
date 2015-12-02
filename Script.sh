@@ -14,7 +14,6 @@ menu()
 			echo "Selecione a opção desejada / Select the desired option:"  
 			echo "1- Instalar o oVirt-Engine"
 			echo "2- Install the oVirt-Engine"
-			echo "3- Instalar oVirt-Hosted-Engine"
 			echo "========================================================="
 			echo -n "Opção/option: "
 			read escolha
