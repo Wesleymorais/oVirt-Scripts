@@ -1,4 +1,4 @@
-﻿#! /bin/bash
+#! /bin/bash
 echo Script para instalação do oVirt-Engine ou oVirt-Hosted-Engine / Script to install the oVirt-Engine or oVirt-Hosted-Engine.  
 echo Versão 2.0                               
 echo Desenvolvido por: Wesley Morais de Oliveira                   
