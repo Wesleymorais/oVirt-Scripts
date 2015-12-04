@@ -1,8 +1,8 @@
-#! /bin/bash
+#!/bin/bash
 echo Script para instalação do oVirt-Engine ou oVirt-Hosted-Engine / Script to install the oVirt-Engine or oVirt-Hosted-Engine.  
 echo Versão 2.0                               
 echo Desenvolvido por: Wesley Morais de Oliveira                   
-date
+	date
 menu()
 {
 	escolha="-1"
@@ -30,63 +30,69 @@ menu()
 } 
 InstalaroVirtEngine()
 {
-	sistema=$(grep "Fedora" /etc/issue)
-	network=$(cd /etc/sysconfig/network-scripts/ && ls -1 | egrep "ifcfg-")
-		if [ "$sistema" == "CentOS" ];
+	echo Sua distro trabalha com qual gerenciador de pacotes?
+		echo 1- YUM
+		echo 2- DNF
+		echo =====================================================
+		read distro 
+		if [ "$distro" -eq "1" ];
 	then
 		su -c "yum -y update"
-		elif [ "$sistema" == "Fedora release 22 (Twenty Two)" ];
+		elif [ "$distro" -eq "2" ];
 	then
 		su -c "dnf -y update"
 		fi 
 		clear
 		echo Definindo um IP fixo.
-		echo "escolha uma placa de rede:"
+		echo "escolha uma placa de rede:(Coloque apenas o nome da placa sem o ifcfg-)"
 		cd /etc/sysconfig/network-scripts/ 
-		ls -1 | egrep "ifcfg"
+		ls -1 | egrep "ifcfg-"
 		echo =============================
 		read nic
-		if [ "$nic" == "$network" ];
+		if [ "$nic" == "eth0" ] || [ "$nic" == "eth1" ] || [ "$nic" == "eth2" ] || [ "$nic" == "eth3" ];
 	then 
 		eth
-		else 
+		elif [ "$nic" == "enp1s0" ] || [ "$nic" == "enp2s0" ] || [ "$nic" == "enp3s0" ] || [ "$nic" == "enp4s0" ];
+	then
 		enp
 		fi
 		echo Dê um nome para associar ao IP deste computador?
-			read FQDN
+		read FQDN
 		echo "$IP  $FQDN" > /etc/hosts
-			cat /etc/hosts
+		cat /etc/hosts
 		echo "Tecle <Enter> para continuar"
 		read
 		echo Reiniciando o serviço de rede.
 		su -c "service network restart"
 		clear
 		echo Baixar e instalar o arquivo RPM contendo os endereços "do" repositório oVirt.
-			if [ "$sistema" == "CentOS" ];
+		if [ "$distro" -eq "1" ];
 	then
-		su -c "yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm"
-		elif [ "$sistema" == "Fedora release 22 (Twenty Two)" ];
+		su -c "yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release35.rpm"
+		elif [ "$distro" -eq "2" ];
 	then
-		su -c "dnf -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm"
+		su -c "dnf -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release35.rpm"
 		fi
 		clear
 		echo Baixar e instalar o oVirt-Engine
-		if [ "$sistema" == "CentOS" ];
+		if [ "$distro" -eq "1" ];
 	then
 		su -c "yum -y install ovirt-engine"
-		elif [ "$sistema" == "Fedora release 22 (Twenty Two)" ];
+		elif [ "$distro" -eq "2" ];
 	then
 		su -c "dnf -y install ovirt-engine"
 		fi
 		clear
 		echo Configurar o oVirt-Engine.
 		su -c "engine-setup" 
+		echo "Pressione <Enter> para continuar"
+		read
 		clear
 		echo Baixando SPICE
-		if [ "$sistema" == "CentOS" ];
+		if [ "$distro" -eq "1" ];
 	then
 		su -c "yum -y install spice-xpi*"
-		elif [ "$sistema" == "Fedora release 22 (Twenty Two)" ];
+		elif [ "$distro" -eq "2" ];
 	then
 		su -c "dnf -y install spice-xpi*"
 		fi 
@@ -120,13 +126,13 @@ eth()
 		read IP_DNS
 		echo Informe o IP do Servidor DNS Secundário / Enter the Secondary DNS Server IP
 		read IP_DNS2
-		sed -i '/BOOTPROTO=dhcp/d' /etc/sysconfig/network-scripts/$nic
-		echo "BOOTPROTO=static" >> /etc/sysconfig/network-scripts/$nic
-		echo "IPADDR=$IP" >>  /etc/sysconfig/network-scripts/$nic
-		echo "Mascara_de_Rede=$mascara_de_rede" >>  /etc/sysconfig/network-scripts/$nic
-		echo "GATEWAY=$IP_GATEWAY" >>  /etc/sysconfig/network-scripts/$nic
-		echo "DNS1=$IP_DNS" >>  /etc/sysconfig/network-scripts/$nic
-		echo "DNS2=$IP_DNS2" >> /etc/sysconfig/network-scripts/$nic
+		sed -i '/BOOTPROTO=dhcp/d' /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "BOOTPROTO=static" >> /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "IPADDR=$IP" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "Mascara_de_Rede=$mascara_de_rede" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "GATEWAY=$IP_GATEWAY" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "DNS1=$IP_DNS" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "DNS2=$IP_DNS2" >> /etc/sysconfig/network-scripts/ifcfg-$nic
 }
 enp()
 {
@@ -141,22 +147,25 @@ enp()
 		read IP_DNS
 		echo Informe o IP do Servidor DNS Secundário / Enter the Secondary DNS Server IP
 		read IP_DNS2
-		sed -i '/BOOTPROTO=dhcp/d' /etc/sysconfig/network-scripts/$nic
-		echo "BOOTPROTO=static" >> /etc/sysconfig/network-scripts/$nic
-		echo "IPADDR=$IP" >>  /etc/sysconfig/network-scripts/$nic
-		echo "Mascara_de_Rede=$mascara_de_rede" >>  /etc/sysconfig/network-scripts/$nic
-		echo "GATEWAY=$IP_GATEWAY" >>  /etc/sysconfig/network-scripts/$nic
-		echo "DNS1=$IP_DNS" >>  /etc/sysconfig/network-scripts/$nic
-		echo "DNS2=$IP_DNS2" >> /etc/sysconfig/network-scripts/$nic
+		sed -i '/BOOTPROTO=dhcp/d' /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "BOOTPROTO=static" >> /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "IPADDR=$IP" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "Mascara_de_Rede=$mascara_de_rede" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "GATEWAY=$IP_GATEWAY" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "DNS1=$IP_DNS" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
+		echo "DNS2=$IP_DNS2" >> /etc/sysconfig/network-scripts/ifcfg-$nic
 }
 InstalaroVirtEngineEnglish()
 {
-	system=$(grep "Fedora" /etc/issue)
-		network=$(cd /etc/sysconfig/network-scripts/ && ls -1 | egrep "ifcfg-")
-		if [ "$system" == "CentOS" ];
+	echo which works with your distro package manager ?
+		echo 1- YUM
+		echo 2- DNF
+		echo =========================================
+		read system
+		if [ "$system" -eq "1" ];
 	then
 		su -c "yum -y update"
-		elif [ "$system" == "Fedora release 22 (Twenty Two)" ];
+		elif [ "$system" -eq "2" ];
 	then
 		su -c "dnf -y update"
 		fi
@@ -167,22 +176,23 @@ InstalaroVirtEngineEnglish()
 		ls -1 | egrep "ifcfg"
 		echo =============================
 		read nic
-		if [ "$nic" == "$system" ];
+		if [ "$nic" == "eth0" ] || [ "$nic" == "eth1" ] || [ "$nic" == "eth2" ]|| [ "$nic" == "eth3" ];
 	then 
 		eth
-		else
+		elif [ "$nic" == "enp1s0" ] || [ "$nic" == "enp2s0" ] || [ "$nic" == "enp3s0" ] || [ "$nic" == "enp4s0" ];
+	then
 		enp
-				fi
-				echo Rebooting the network service.
-				su -c "service network restart"
-				clear
-				echo Set the FQDN.
-				echo name to be used as FQDN ?
-				read FQDN
-				echo "$IP      $FQDN" > /etc/hosts
-				clear
-				echo Download and install the RPM "file" containing the addresses of oVirt repository.
-				if [ "$system" == "CentOS" ];
+		fi
+		echo Rebooting the network service.
+		su -c "service network restart"
+		clear
+		echo Set the FQDN.
+		echo name to be used as FQDN ?
+		read FQDN
+		echo "$IP      $FQDN" > /etc/hosts
+		clear
+		echo Download and install the RPM "file" containing the addresses of oVirt repository.
+		if [ "$system" -eq "1" ];
 	then
 		su -c "yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm"
 		elif [ "$system" -eq "2" ];
@@ -191,10 +201,10 @@ InstalaroVirtEngineEnglish()
 		fi
 		clear
 		echo Download and install the oVirt-Engine
-		if [ "$system" == "CentOS" ];
+		if [ "$system" -eq "1" ];
 	then
 		su -c "yum -y install ovirt-engine"
-		elif [ "$system" == "Fedora release 22 (Twenty Two)" ];
+		elif [ "$system" -eq "2" ];
 	then
 		su -c "dnf -y install ovirt-engine"
 		fi
@@ -203,10 +213,10 @@ InstalaroVirtEngineEnglish()
 		su -c "engine-setup"
 		clear
 		echo Downloading SPICE
-		if [ "$system" == "CentOS" ];
+		if [ "$system" -eq "1" ];
 	then
 		su -c "yum -y install spice-xpi*"
-		elif [ "$system" == "Fedora release 22 (Twenty Two)" ];
+		elif [ "$system" -eq "2" ];
 	then
 		su -c "dnf -y install spice-xpi*"
 		fi
@@ -228,12 +238,15 @@ InstalaroVirtEngineEnglish()
 }
 oVirtHostedEngine()
 {
-	so=$(grep "Fedora" /etc/issue)
-		rede=$(cd /etc/sysconfig/network-scripts/ && ls -1 | egrep "ifcfg-")
-		if [ "$so" == "CentOS" ];
+	echo Este sistema trabalha com qual gerenciador de pacotes?
+		echo 1- YUM
+		echo 2- DNF
+		echo ======================================================
+		read Sistema
+		if [ "$Sistema" -eq "1" ];
 	then
 		su -c "yum -y update"
-		elif [ "$so" == "Fedora release 22 (Twenty Two)" ];
+		elif [ "$Sistema" -eq "2" ];
 	then
 		su -c "dnf -y update"
 		fi 
@@ -243,37 +256,38 @@ oVirtHostedEngine()
 		ls -1 | egrep "ifcfg"
 		echo =============================
 		read nic
-		if [ "$nic" == "$rede" ];
+		if [ "$nic" == "eth0" ] || [ "$nic" == "eth1" ] || [ "$nic" == "eth2" ]|| [ "$nic" == "eth3" ];
 	then 
 		eth
-		else
+		elif [ "$nic" == "enp1s0" ] || [ "$nic" == "enp2s0" ] || [ "$nic" == "enp3s0" ] || [ "$nic" == "enp4s0" ];
+	then
 		enp
-				fi
-				clear
-				echo Reiniciando o serviço de rede.
-				su -c "service network restart"
-				clear
-				echo Dê um nome para esta máquina":"
-				read maquina
-				echo $maquina > /etc/hostname
-				clear
-				echo Defina o FQDN.
-				echo Informe um nome para associar ao IP da máquina onde está o oVirt-Hosted-Engine
-				read FQDN_hosted_Engine
-				echo Informe um IP a ser usado pela VM que conterá o oVirt-Engine
-				read IP_oVirt_Engine
-				echo Informe um nome para associar ao IP da VM onde estará o oVirt-Hosted-Engine
-				read FQDN_Engine
-				echo "$IP  $FQDN_hosted_Engine" >> /etc/hosts
-				echo "$IP_oVirt_Engine  $FQDN_Engine" >> /etc/hosts
-				clear
-				echo "Os FQDNs são:"
-				cat /etc/hosts 
-				echo "Tecle <Enter> para continuar"
-				read
-				clear 
-				echo Baixar e instalar o arquivo RPM contendo os endereços "do" repositório oVirt.
-				if [ "$Sistema" -eq "1" ];
+		fi
+		clear
+		echo Reiniciando o serviço de rede.
+		su -c "service network restart"
+		clear
+		echo Dê um nome para esta máquina":"
+		read maquina
+		echo $maquina > /etc/hostname
+		clear
+		echo Defina o FQDN.
+		echo Informe um nome para associar ao IP da máquina onde está o oVirt-Hosted-Engine
+		read FQDN_hosted_Engine
+		echo Informe um IP a ser usado pela VM que conterá o oVirt-Engine
+		read IP_oVirt_Engine
+		echo Informe um nome para associar ao IP da VM onde estará o oVirt-Hosted-Engine
+		read FQDN_Engine
+		echo "$IP  $FQDN_hosted_Engine" >> /etc/hosts
+		echo "$IP_oVirt_Engine  $FQDN_Engine" >> /etc/hosts
+		clear
+		echo "Os FQDNs são:"
+		cat /etc/hosts 
+		echo "Tecle <Enter> para continuar"
+		read
+		clear 
+		echo Baixar e instalar o arquivo RPM contendo os endereços "do" repositório oVirt.
+		if [ "$Sistema" -eq "1" ];
 	then
 		su -c "yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm"
 		elif [ "$Sistema" -eq "2" ];
