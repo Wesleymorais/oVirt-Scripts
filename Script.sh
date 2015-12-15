@@ -22,10 +22,10 @@ InstalaroVirtEngine()
 	distro=$(zenity --width=100 --height=200 --list --text "Sua distro trabalha com qual gerenciador de pacotes?" --radiolist --column "" --column "" FALSE "1-YUM" FALSE "2-DNF")	
 		if [ "$distro" == "1-YUM" ];
 	then
-		yum -y update 
+		yum -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando seu Sistema. Ao terminar, esta janela será fechada automaticamente"
 		elif [ "$distro" == "2-DNF" ];
 	then
-		dnf -y update
+		dnf -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando seu Sistema. Ao terminar, esta janela será fechada automaticamente"
 		fi  
 		clear
 		zenity --info --text "Definindo um IP fixo."
@@ -140,10 +140,10 @@ InstalaroVirtEngineEnglish()
 	system=$(zenity --width=100 --height=200 --list --text "Which works with your distro package manager ?"           --radiolist --column "" --column "" FALSE "1-YUM" FALSE "2-DNF")
 		if [ "$system" == "1-YUM" ];
 	then
-		yum -y update
+		yum -y update | zenity --width=400 --height=100 --progress --pulsate --text "Updating Your System. When finished, this window will close automatically."
 		elif [ "$system" == "2-DNF" ];
 	then
-		dnf -y update
+		dnf -y update | zenity --width=400 --height=100 --progress --pulsate --text "Updating Your System. When finished, this window will close automatically."
 		fi
 		clear
 		zenity --info --text "Setting a fixed IP."
@@ -212,10 +212,10 @@ oVirtHostedEngine()
 	Sistema=$(zenity --width=100 --height=200 --list --text "Sua distro trabalha com qual gerenciador de pacotes?" --radiolist --column "" --column "" FALSE "1-YUM" FALSE "2-DNF")
 		if [ "$Sistema" == "1-YUM" ];
 	then
-		yum -y update
+		yum -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando seu Sistema. Ao terminar, esta janela será fechada automaticamente"
 		elif [ "$Sistema" == "2-DNF" ];
 	then
-		dnf -y update
+		dnf -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando seu Sistema. Ao terminar, esta janela será fechada automaticamente"
 		fi 
 		clear	
 		zenity --info --text "Definindo um IP fixo."
