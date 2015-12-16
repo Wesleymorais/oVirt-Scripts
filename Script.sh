@@ -22,10 +22,10 @@ InstalaroVirtEngine()
 	distro=$(zenity --width=100 --height=200 --list --text "Sua distro trabalha com qual gerenciador de pacotes?" --radiolist --column "" --column "" FALSE "1-YUM" FALSE "2-DNF")	
 		if [ "$distro" == "1-YUM" ];
 	then
-		yum -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando seu Sistema. Ao terminar, esta janela será fechada automaticamente"
+		yum -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando o seu sistema. Ao terminar, esta janela será automaticamente fechada" --auto-close
 		elif [ "$distro" == "2-DNF" ];
 	then
-		dnf -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando seu Sistema. Ao terminar, esta janela será fechada automaticamente"
+		dnf -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando o seu sistema. Ao terminar, esta janela será automaticamente fechada" --auto-close
 		fi  
 		clear
 		zenity --info --text "Definindo um IP fixo."
@@ -43,39 +43,35 @@ InstalaroVirtEngine()
 		fi
 		FQDN=$(zenity --width=400 --height=200 --entry --text "" --entry-text "" --title "Dê um nome para associar ao IP deste computador?")
 		echo "$IP  $FQDN" > /etc/hosts
-		zenity --info --text "Reiniciando o serviço de rede."
-		service network restart
-		clear
-		zenity --info --text "Baixar e instalar o arquivo RPM contendo os endereços do repositório oVirt."
+		service network restart | zenity --width=400 --height=100 --progress --pulsate --text "Reiniciando o serviço de rede." --auto-close
+		clear 
 		if [ "$distro" == "1-YUM" ];
 	then
-		yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm
+		yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm | zenity --width=400 --height=100 --progress --pulsate --text "Baixando e instalando arquivo RPM contendo os endereços do repositório oVirt." --auto-close
 		elif [ "$distro" == "2-DNF" ];
 	then
-		dnf -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm
+		dnf -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm | zenity --width=400 --height=100 --progress --pulsate --text "Baixando e instalando arquivo RPM contendo os endereços do repositório oVirt." --auto-close
 		fi
 		clear
-		zenity --info --text "Baixar e instalar o oVirt-Engine"
 		if [ "$distro" == "1-YUM" ];
 	then
-		yum -y install ovirt-engine
+		yum -y install ovirt-engine | zenity --width=400 --height=100 --progress --pulsate --text "Baixando oVirt-Engine" --auto-close
 		elif [ "$distro" == "2-DNF" ];
 	then
-		dnf -y install ovirt-engine
+		dnf -y install ovirt-engine | zenity --width=400 --height=100 --progress --pulsate --text "Baixando oVirt-Engine" --auto-close
 		fi
 		clear
 		zenity --info --text "Configurar o oVirt-Engine."
-		engine-setup 
+		engine-setup
 		echo "Pressione <Enter> para continuar"
 		read
 		clear
-		zenity --info --text "Baixando SPICE"
 		if [ "$distro" == "1-YUM" ];
 	then
-		yum -y install spice-xpi*
+		yum -y install spice-xpi* | zenity --width=400 --height=100 --progress --pulsate --text "Baixando SPICE" --auto-close
 		elif [ "$distro" == "2-DNF" ];
 	then
-		dnf -y install spice-xpi*
+		dnf -y install spice-xpi* | zenity --width=400 --height=100 --progress --pulsate --text "Baixando SPICE" --auto-close
 		fi 
 		clear
 		browser=$(zenity --width=100 --height=200 --list --text "Escolha um browser:" --radiolist --column "" --column "" FALSE "1- Firefox" FALSE "2- Google-Chrome")
@@ -140,10 +136,10 @@ InstalaroVirtEngineEnglish()
 	system=$(zenity --width=100 --height=200 --list --text "Which works with your distro package manager ?"           --radiolist --column "" --column "" FALSE "1-YUM" FALSE "2-DNF")
 		if [ "$system" == "1-YUM" ];
 	then
-		yum -y update | zenity --width=400 --height=100 --progress --pulsate --text "Updating Your System. When finished, this window will close automatically."
+		yum -y update | zenity --width=400 --height=100 --progress --pulsate --text "Updating your system. When finished, this window will close automatically." --auto-close
 		elif [ "$system" == "2-DNF" ];
 	then
-		dnf -y update | zenity --width=400 --height=100 --progress --pulsate --text "Updating Your System. When finished, this window will close automatically."
+		dnf -y update | zenity --width=400 --height=100 --progress --pulsate --text "Updating your system. When finished, this window will close automatically." --auto-close
 		fi
 		clear
 		zenity --info --text "Setting a fixed IP."
@@ -158,42 +154,38 @@ InstalaroVirtEngineEnglish()
 		elif [ "$nic" == "ens1" ] || [ "$nic" == "ens2" ] || [ "$nic" == "ens3" ] || [ "$nic" == "ens4" ];
 	then
 		ens
-		fi
-		zenity --info --text "Rebooting the network service."
-		service network restart
+		fi 
+		service network restart | zenity --width=400 --height=100 --progress --pulsate --text "Rebooting the network service." --auto-close
 		clear
 		echo Set the FQDN.
 		FQDN=$(zenity --width=400 --height=200 --entry --text "" --entry-text "" --title "Name to be used as FQDN ?") 
 		echo "$IP      $FQDN" > /etc/hosts
-		clear
-		zenity --info --text  "Download and install the RPM file containing the addresses of oVirt repository."
+		clear 
 		if [ "$system" == "1-YUM" ];
 	then
-		yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm
+		yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm | zenity --width=400 --height=100 --progress --pulsate --text "Download and install the RPM file containing the addresses of oVirt repository." --auto-close
 		elif [ "$system" == "2-DNF" ];
 	then
-		dnf -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm
+		dnf -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm | zenity --width=400 --height=100 --progress --pulsate --text "Download and install the RPM file containing the addresses of oVirt repository." --auto-close
 		fi
-		clear
-		zenity --info --text  "Download and install the oVirt-Engine"
+		clear  
 		if [ "$system" == "1-YUM" ];
 	then
-		yum -y install ovirt-engine
+		yum -y install ovirt-engine | zenity --width=400 --height=100 --progress --pulsate --text "Download and install the oVirt-Engine" --auto-close
 		elif [ "$system" == "2-DNF" ];
 	then
-		dnf -y install ovirt-engine
+		dnf -y install ovirt-engine | zenity --width=400 --height=100 --progress --pulsate --text "Download and install the oVirt-Engine" --auto-close
 		fi
 		clear
 		zenity --info --text "Setting the oVirt-Engine."
 		engine-setup
-		clear
-		zenity --info --text "Downloading SPICE"
+		clear 
 		if [ "$system" == "1-YUM" ];
 	then
-		yum -y install spice-xpi*
+		yum -y install spice-xpi* | zenity --width=400 --height=100 --progress --pulsate --text "Downloading SPICE" --auto-close
 		elif [ "$system" == "2-DNF" ];
 	then
-		dnf -y install spice-xpi*
+		dnf -y install spice-xpi* | zenity --width=400 --height=100 --progress --pulsate --text "Downloading SPICE" --auto-close
 		fi
 		clear
 		browser=$(zenity --width=100 --height=200 --list --text "Escolha um browser:" --radiolist --column "" --column "" FALSE "1-Firefox" FALSE "2-Google-Chrome")
@@ -212,10 +204,10 @@ oVirtHostedEngine()
 	Sistema=$(zenity --width=100 --height=200 --list --text "Sua distro trabalha com qual gerenciador de pacotes?" --radiolist --column "" --column "" FALSE "1-YUM" FALSE "2-DNF")
 		if [ "$Sistema" == "1-YUM" ];
 	then
-		yum -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando seu Sistema. Ao terminar, esta janela será fechada automaticamente"
+		yum -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando o seu sistema. Ao terminar, esta janela será automaticamente fechada" --auto-close
 		elif [ "$Sistema" == "2-DNF" ];
 	then
-		dnf -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando seu Sistema. Ao terminar, esta janela será fechada automaticamente"
+		dnf -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando o seu sistema. Ao terminar, esta janela será automaticamente fechada" --auto-close
 		fi 
 		clear	
 		zenity --info --text "Definindo um IP fixo."
@@ -232,8 +224,7 @@ oVirtHostedEngine()
 		ens
 		fi
 		clear
-		zenity --info --text "Reiniciando o serviço de rede."
-		service network restart
+		service network restart | zenity --width=400 --height=100 --progress --pulsate --text "Reiniciando o serviço de rede." --auto-close
 		clear
 		FQDN_hosted_Engine=$(zenity --width=600 --height=200 --entry --text "" --entry-text "" --title "Informe um nome para associar ao IP da máquina onde está o oVirt-Hosted-Engine")
 		IP_oVirt_Engine=$(zenity --width=500 --height=200 --entry --text "" --entry-text "" --title "Informe um IP a ser usado pela VM que conterá o oVirt-Engine")
@@ -246,22 +237,22 @@ oVirtHostedEngine()
 		echo "Tecle <Enter> para continuar"
 		read
 		clear 
-		zenity --info --text "Baixar e instalar o arquivo RPM contendo os endereços do repositório oVirt."
+		zenity --info --text "Baixando e instalando arquivo RPM contendo os endereços do repositório oVirt."
 		if [ "$Sistema" == "1-YUM" ];
 	then
-		yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm
+		yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm | zenity --width=400 --height=100 --progress --pulsate --text "Baixando e instalando arquivo RPM contendo os endereços do repositório oVirt." --auto-close
 		elif [ "$Sistema" == "2-DNF" ];
 	then
-		dnf -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm
+		dnf -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm | zenity --width=400 --height=100 --progress --pulsate --text "Baixando e instalando arquivo RPM contendo os endereços do repositório oVirt." --auto-close
 		fi
 		clear
-		zenity --info --text "Baixar e instalar o oVirt-Hosted-Engine"
+		zenity --info --text "Baixando e instalando oVirt-Hosted-Engine"
 		if [ "$Sistema" == "1-YUM" ];
 	then
-		yum -y install ovirt-hosted-engine-setup
+		yum -y install ovirt-hosted-engine-setup | zenity --width=400 --height=100 --progress --pulsate --text "Baixando e instalando oVirt-Hosted-Engine" --auto-close
 		elif [ "$Sistema" == "2-DNF" ];
 	then
-		dnf -y install ovirt-hosted-engine-setup
+		dnf -y install ovirt-hosted-engine-setup | zenity --width=400 --height=100 --progress --pulsate --text "Baixando e instalando oVirt-Hosted-Engine" --auto-close
 		fi
 		clear
 		zenity --width=600 --height=200 --info --text "Levando em consideração de que já existe um servidor NFS ativo. Verifique se a pasta compartilhada está disponivel.
