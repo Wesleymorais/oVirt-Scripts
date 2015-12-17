@@ -1,2 +1,3 @@
-# Script para instalar o oVirt
-Este script tem como objetivo auxiliar no processo de preparação, download e configuração do oVirt.
+# Scritp to install oVirt-Engine and oVirt-Hosted-Engine
+This script have as objective help you to install the ovirt-engine or hosted-engine.
+He it is in portuguese and english
