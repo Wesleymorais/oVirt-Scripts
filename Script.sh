@@ -288,8 +288,6 @@ NFS_MONTAR_COMPARTILHAMENTO()
 		chmod 0755 $ISO_local
 		chown 36:36 $ISO_local
 		zenity --info --text "Configurar o oVirt-Hosted-Engine."
-		echo "Tecle <Enter> para continuar"
-		read
 		hosted-engine --deploy
 		echo "Tecle <Enter> para continuar"
 		read
