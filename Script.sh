@@ -40,6 +40,8 @@ InstalaroVirtEngine()
 		elif [ "$nic" == "ens1" ] || [ "$nic" == "ens2" ] || [ "$nic" == "ens3" ] || [ "$nic" == "ens4" ];
 	then
 		ens
+	else
+		exit
 		fi
 		FQDN=$(zenity --width=400 --height=200 --entry --text "" --entry-text "" --title "Dê um nome para associar ao IP deste computador?")
 		echo "$IP  $FQDN" > /etc/hosts
@@ -63,8 +65,6 @@ InstalaroVirtEngine()
 		clear
 		zenity --info --text "Configurar o oVirt-Engine."
 		engine-setup
-		echo "Pressione <Enter> para continuar"
-		read
 		clear
 		if [ "$distro" == "1-YUM" ];
 	then
@@ -154,6 +154,8 @@ InstalaroVirtEngineEnglish()
 		elif [ "$nic" == "ens1" ] || [ "$nic" == "ens2" ] || [ "$nic" == "ens3" ] || [ "$nic" == "ens4" ];
 	then
 		ens
+	else
+		exit	
 		fi 
 		service network restart | zenity --width=400 --height=100 --progress --pulsate --text "Rebooting the network service." --auto-close
 		clear
@@ -210,7 +212,6 @@ oVirtHostedEngine()
 		dnf -y update | zenity --width=400 --height=100 --progress --pulsate --text "Atualizando o seu sistema. Ao terminar, esta janela será automaticamente fechada" --auto-close
 		fi 
 		clear	
-		zenity --info --text "Definindo um IP fixo."
 		placa=$(cd /etc/sysconfig/network-scripts/ && ls -1 | egrep "ifcfg-")  
 		nic=$(zenity --width=600 --height=200 --entry --text "$placa" --entry-text "" --title "Escolha uma placa de rede? (informe apenas o nome da placa sem o comando ifcfg-)")
 		if [ "$nic" == "eth0" ] || [ "$nic" == "eth1" ] || [ "$nic" == "eth2" ]|| [ "$nic" == "eth3" ];
@@ -222,6 +223,8 @@ oVirtHostedEngine()
 		elif [ "$nic" == "ens1" ] || [ "$nic" == "ens2" ] || [ "$nic" == "ens3" ] || [ "$nic" == "ens4" ];
 	then
 		ens
+	else
+		exit
 		fi
 		clear
 		service network restart | zenity --width=400 --height=100 --progress --pulsate --text "Reiniciando o serviço de rede." --auto-close
@@ -232,12 +235,8 @@ oVirtHostedEngine()
 		echo "$IP  $FQDN_hosted_Engine" >> /etc/hosts
 		echo "$IP_oVirt_Engine  $FQDN_Engine" >> /etc/hosts
 		clear
-		echo "Os FQDNs são:"
-		cat /etc/hosts 
-		echo "Tecle <Enter> para continuar"
-		read
-		clear 
-		zenity --info --text "Baixando e instalando arquivo RPM contendo os endereços do repositório oVirt."
+FQDNS=$(cat /etc/hosts) 
+		zenity --info --text "Os FQDNs são: $FQDNS"
 		if [ "$Sistema" == "1-YUM" ];
 	then
 		yum -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm | zenity --width=400 --height=100 --progress --pulsate --text "Baixando e instalando arquivo RPM contendo os endereços do repositório oVirt." --auto-close
@@ -246,7 +245,6 @@ oVirtHostedEngine()
 		dnf -y install http://plain.resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm | zenity --width=400 --height=100 --progress --pulsate --text "Baixando e instalando arquivo RPM contendo os endereços do repositório oVirt." --auto-close
 		fi
 		clear
-		zenity --info --text "Baixando e instalando oVirt-Hosted-Engine"
 		if [ "$Sistema" == "1-YUM" ];
 	then
 		yum -y install ovirt-hosted-engine-setup | zenity --width=400 --height=100 --progress --pulsate --text "Baixando e instalando oVirt-Hosted-Engine" --auto-close
@@ -255,25 +253,40 @@ oVirtHostedEngine()
 		dnf -y install ovirt-hosted-engine-setup | zenity --width=400 --height=100 --progress --pulsate --text "Baixando e instalando oVirt-Hosted-Engine" --auto-close
 		fi
 		clear
+	NFS_USAR=$(zenity --width=100 --height=200 --list --text "Deseja montar uma pasta compartilhada ?" --radiolist --column "" --column "" FALSE "Sim" FALSE "Não")
+		if [ "$NFS_USAR" == "Sim" ];
+	then
+		NFS_MONTAR_COMPARTILHAMENTO
+		else
+	zenity --info --text "Vamos continuar usando um arquivo ISO local."
+		fi
+NFS_MONTAR_COMPARTILHAMENTO() 
+{
 		zenity --width=600 --height=200 --info --text "Levando em consideração de que já existe um servidor NFS ativo. Verifique se a pasta compartilhada está disponivel.
 		Exemplo de comando para visualizar as pastas compatilhadas: showmount -e IP_do_Servidor
 		Monte uma pasta compartilhada, esta será utilizada para obter o arquivo ISO. 
 		Exemplo de comando para montar uma pasta compartilhada:
 		mount -t nfs 10.0.0.56:/home/usuario  /mnt"
-		echo "Tecle <Enter> para continuar"
-		read
-		caminho=$(zenity --width=700 --height=200 --entry --text "" --entry-text "" --title "Informe o caminho da pasta compartilhada?<IP_do_Servidor:/diretório_onde_a_pasta_está_localizada>") 
-		pastalocal=$(zenity --width=500 --height=200 --entry --text "" --entry-text "" --title "Informe a pasta local onde o compartilhamento será montado?")
+		caminho=$(zenity --width=700 --height=200 --entry --text "Informe o caminho da pasta compartilhada?<IP_do_Servidor:/diretório_onde_a_pasta_está_localizada> " --entry-text "" --title "") 
+		pastalocal=$(zenity --width=500 --height=200 --entry --text "Informe a pasta local onde o compartilhamento será montado?" --entry-text "" --title "")
 		mount -t nfs $caminho $pastalocal
-		zenity --info --text "Arquivos compartilhados:" $pastalocal
-		ls
+		Arquivos=$(cd $pastalocal && ls)			
+		zenity --info --text "Arquivos compartilhados:" $Arquivos
 		echo "Tecle <Enter> para continuar"
 		read
 		zenity --info --text "Alterando permissões do arquivo iso."
-		permissao=$(zenity --width=500 --height=200 --entry --text "" --entry-text "" --title "Informe o nome do arquivo ISO para alterar suas permissões:")
+		permissao=$(zenity --width=500 --height=200 --entry --text "" --entry-text "" --title "Informe o nome do arquivo ISO para alterar suas permissões?")
 		chmod 0755 $permissao.iso
 		chown 36:36 $permissao.iso
 		clear
+}
+		diretorio_local=$(zenity --width=500 --height=200 --entry --text "Informe o diretório local onde está o arquivo ISO?" --entry-text "" --title "")
+		chmod 0755 $diretorio_local
+		chown 36:36 $diretorio_local
+		ISO_local=$(zenity --width=500 --height=200 --entry --text "Informe o arquivo ISO desejado para alterar as suas permissões?" --entry-text "" --title "")
+		cd $diretorio_local	
+		chmod 0755 $ISO_local
+		chown 36:36 $ISO_local
 		zenity --info --text "Configurar o oVirt-Hosted-Engine."
 		echo "Tecle <Enter> para continuar"
 		read
