@@ -275,10 +275,14 @@ NFS_MONTAR_COMPARTILHAMENTO()
 		echo "Tecle <Enter> para continuar"
 		read
 		zenity --info --text "Alterando permissões do arquivo iso."
-		permissao=$(zenity --width=500 --height=200 --entry --text "" --entry-text "" --title "Informe o nome do arquivo ISO para alterar suas permissões?")
-		chmod 0755 $permissao.iso
-		chown 36:36 $permissao.iso
+		Diretorio_ISO=$(zenity --width=500 --height=200 --entry --text "" --entry-text "" --title "Informe o direttório onde está o arquivo ISO para alterar suas permissões?")
+		chmod 0755 $Diretorio_ISO
+		chown 36:36 $Diretorio_ISO
+		Arquivo_ISO=$(zenity --width=500 --height=200 --entry --text "Informe o arquivo ISO desejado para alterar as suas permissões?" --entry-text "" --title "")
+		chmod 0755 $Arquivo_ISO
+		chown 36:36 $Arquivo_ISO
 		clear
+		
 }
 		diretorio_local=$(zenity --width=500 --height=200 --entry --text "Informe o diretório local onde está o arquivo ISO?" --entry-text "" --title "")
 		chmod 0755 $diretorio_local
