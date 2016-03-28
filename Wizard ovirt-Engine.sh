@@ -74,7 +74,7 @@ eth()
 		IP_DNS=$(zenity --width=600 --height=200 --entry --text "Enter the Primary DNS Server IP" --entry-text "" --title "")
 		IP_DNS2=$(zenity --width=600 --height=200 --entry --text "Enter the Secondary DNS Server IP" --entry-text "" --title "")		
 		sed -i '/BOOTPROTO=DHCP/d' /etc/sysconfig/network-scripts/ifcfg-$nic
-		sed -i '/BOOTPROTO=dhcp/d' /etc/sysconfig/network-scripts/ifcfg-$nic
+		sed -i '/BOOTPROTO="dhcp"/d' /etc/sysconfig/network-scripts/ifcfg-$nic
 		echo "BOOTPROTO=static" >> /etc/sysconfig/network-scripts/ifcfg-$nic
 		echo "IPADDR=$IP" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
 		echo "NetMask=$netmask" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
@@ -90,7 +90,7 @@ enp()
 		IP_DNS=$(zenity --width=600 --height=200 --entry --text "Enter the Primary DNS Server IP" --entry-text "" --title "")
 		IP_DNS2=$(zenity --width=600 --height=200 --entry --text "Enter the Secondary DNS Server IP" --entry-text "" --title "")
 		sed -i '/BOOTPROTO=DHCP/d' /etc/sysconfig/network-scripts/ifcfg-$nic
-		sed -i '/BOOTPROTO=dhcp/d' /etc/sysconfig/network-scripts/ifcfg-$nic
+		sed -i '/BOOTPROTO="dhcp"/d' /etc/sysconfig/network-scripts/ifcfg-$nic
 		echo "BOOTPROTO=static" >> /etc/sysconfig/network-scripts/ifcfg-$nic
 		echo "IPADDR=$IP" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
 		echo "NetMask=$netmask" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
@@ -106,7 +106,7 @@ ens()
 		IP_DNS=$(zenity --width=600 --height=200 --entry --text "Enter the Primary DNS Server IP" --entry-text "" --title "")
 		IP_DNS2=$(zenity --width=600 --height=200 --entry --text "Enter the Secondary DNS Server IP" --entry-text "" --title "")		
 		sed -i '/BOOTPROTO=DHCP/d' /etc/sysconfig/network-scripts/ifcfg-$nic
-		sed -i '/BOOTPROTO=dhcp/d' /etc/sysconfig/network-scripts/ifcfg-$nic
+		sed -i '/BOOTPROTO="dhcp"/d' /etc/sysconfig/network-scripts/ifcfg-$nic
 		echo "BOOTPROTO=static" >> /etc/sysconfig/network-scripts/ifcfg-$nic
 		echo "IPADDR=$IP" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
 		echo "NetMask=$netmask" >>  /etc/sysconfig/network-scripts/ifcfg-$nic
